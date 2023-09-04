@@ -1,10 +1,10 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
-import com.health.sugar.lf10sugarhealth.dto.CreateSugarInputRequestBody;
 import com.health.sugar.lf10sugarhealth.model.Member;
+import com.health.sugar.lf10sugarhealth.model.MembershipStatus;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
 import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
-import com.health.sugar.lf10sugarhealth.repository.SugarInputRepository;
+import com.health.sugar.lf10sugarhealth.repository.MembershipStatusRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,30 +15,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/sugar")
-public class SugarInputController {
-
-    @Autowired
-    SugarInputRepository sugarInputRepository;
+@RequestMapping("/member")
+public class MemberController {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    MembershipStatusRepository membershipStatusRepository;
 
     Logger logger = LoggerFactory.getLogger(SugarInputController.class);
 
 
     @GetMapping("/")
-    public ResponseEntity<List<SugarInput>> getAllSugarInputs() {
+    public ResponseEntity<List<Member>> getAll() {
         try {
-            List<SugarInput> sugarInputList = new ArrayList<>(sugarInputRepository.findAll());
+            List<Member> members = new ArrayList<>(memberRepository.findAll());
 
-            if (sugarInputList.isEmpty()) {
+            if (members.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            return new ResponseEntity<>(sugarInputList, HttpStatus.OK);
+            return new ResponseEntity<>(members, HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -46,12 +47,12 @@ public class SugarInputController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SugarInput> getSugarInputById(@PathVariable("id") long id) {
+    public ResponseEntity<Member> getById(@PathVariable("id") UUID id) {
         try {
-            Optional<SugarInput> sugarInputOptional = sugarInputRepository.findById(id);
+            Optional<Member> memberOptional = memberRepository.findById(id);
 
-            return sugarInputOptional
-                    .map(sugarInput -> new ResponseEntity<>(sugarInput, HttpStatus.OK))
+            return memberOptional
+                    .map(member -> new ResponseEntity<>(member, HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
         } catch (Exception e) {
@@ -61,9 +62,9 @@ public class SugarInputController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<SugarInput> deleteSugarInputById(@PathVariable("id") long id) {
+    public ResponseEntity<SugarInput> deleteById(@PathVariable("id") UUID id) {
         try {
-            sugarInputRepository.deleteById(id);
+            memberRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -72,22 +73,22 @@ public class SugarInputController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<SugarInput> createSugarInput(@RequestBody CreateSugarInputRequestBody sugarInputRequestBody) {
+    public ResponseEntity<Member> create(@RequestBody Member memberRequestBody) {
         try {
-            Optional<Member> member = memberRepository.findById(sugarInputRequestBody.getMemberID());
+            MembershipStatus membershipStatus = membershipStatusRepository.save(new MembershipStatus());
 
-            if (member.isPresent()) {
-                SugarInput sugarInput = sugarInputRepository.save(
-                        new SugarInput(sugarInputRequestBody.getIntake(), member.get()));
+            Member member = memberRepository.save(
+                    new Member(memberRequestBody.getFirstname(), memberRequestBody.getLastname(), membershipStatus));
 
-                return new ResponseEntity<>(sugarInput, HttpStatus.CREATED);
-            }
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            membershipStatus.setMember(member);
+
+            membershipStatusRepository.save(membershipStatus);
+
+            return new ResponseEntity<>(member, HttpStatus.CREATED);
 
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }
