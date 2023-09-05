@@ -1,62 +1,38 @@
 package com.health.sugar.lf10sugarhealth.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.UUID;
 
 public class SugarInputStat {
-    private UUID member_id;
-    private Float sum;
-    private LocalDateTime date;
+    private Float sugar_total;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate date;
 
     SugarInputStat() {}
 
-    SugarInputStat(UUID member_id, Float sum, LocalDateTime date) {
-        this.member_id = member_id;
-        this.sum = sum;
+    public SugarInputStat(Float sugar_total, LocalDate date) {
+        this.sugar_total = sugar_total;
         this.date = date;
     }
-
-    SugarInputStat(UUID member_id, Float sum, LocalDate date) {
-        this.member_id = member_id;
-        this.sum = sum;
-        this.date = date.atStartOfDay();
+    public Float getSugar_total() {
+        return sugar_total;
     }
 
-    SugarInputStat(UUID member_id, Float sum, Date date) {
-        this.member_id = member_id;
-        this.sum = sum;
-        this.date = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    public void setSugar_total(Float sugar_total) {
+        this.sugar_total = sugar_total;
     }
 
-    SugarInputStat(UUID member_id, Float sum) {
-        this.member_id = member_id;
-        this.sum = sum;
-    }
-
-    public UUID getMember_id() {
-        return member_id;
-    }
-
-    public void setMember_id(UUID member_id) {
-        this.member_id = member_id;
-    }
-
-    public Float getSum() {
-        return sum;
-    }
-
-    public void setSum(Float sum) {
-        this.sum = sum;
-    }
-
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 }

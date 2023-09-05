@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -96,33 +95,48 @@ public class SugarInputController {
     }
 
     @GetMapping("/{id}/stats/{period}")
-    public ResponseEntity<List<SugarInput>> getStatsByPeriod(@PathVariable("id") UUID memberId, @PathVariable("period") StatsPeriod period) {
+    public ResponseEntity<List<SugarInputStat>> getStatsByPeriod(@PathVariable("id") UUID memberId, @PathVariable("period") StatsPeriod period) {
         try {
+            List<SugarInputStat> sugarInputStats = new ArrayList<>();
+            LocalDate dateNow = LocalDate.now();
+            LocalDate endDate = dateNow;
+            LocalDate startDate;
+
             switch (period) {
-                case DAILY -> {
-                    logger.info("Called daily stats for member: " + memberId);
-                    LocalDateTime endDate = LocalDate.now().atTime(23,59,59);
-                    LocalDateTime startDate = LocalDate.now().minusDays(7).atStartOfDay();
-
-                    List<SugarInputStat> sugarInputStats = sugarInputRepository.getSumOfSugarInputsForMemberAndTimestampDateBetween(memberId, startDate, endDate);
-
+                case LAST_7_DAYS -> {
+                        startDate = endDate.minusDays(6);
                 }
-                case MONTHLY -> {
-                    logger.info("Called monthly stats for member: " + memberId);
+                case LAST_30_DAYS -> {
+                        startDate = endDate.minusDays(29);
                 }
-                default ->  {
-                    logger.error("Called stats for member: " + memberId + " without valid period..");
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                case CURRENT_MONTH -> {
+                    endDate = dateNow.withDayOfMonth(dateNow.lengthOfMonth());
+                    startDate = endDate.withDayOfMonth(1);
                 }
+                default -> startDate = endDate;
             }
 
-            List<SugarInput> sugarInputList = new ArrayList<>(sugarInputRepository.findAll());
+            List<SugarInput> sugarInputList = sugarInputRepository.findAllByMemberIdAndDateBetween(memberId, startDate, endDate);
 
-            if (sugarInputList.isEmpty()) {
+            List<LocalDate> listOfDates = startDate.datesUntil(endDate.plusDays(1)).toList();
+
+            listOfDates.forEach(currentDate -> {
+                float totalSugarOfDate = 0f;
+
+                for (SugarInput sugarInput : sugarInputList) {
+                    if (sugarInput.getDate().isEqual(currentDate)) {
+                        totalSugarOfDate += sugarInput.getIntake();
+                    }
+                }
+
+                sugarInputStats.add(new SugarInputStat(totalSugarOfDate, currentDate));
+            });
+
+            if (sugarInputStats.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            return new ResponseEntity<>(sugarInputList, HttpStatus.OK);
+            return new ResponseEntity<>(sugarInputStats, HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

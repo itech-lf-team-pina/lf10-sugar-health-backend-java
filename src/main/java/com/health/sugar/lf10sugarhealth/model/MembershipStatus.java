@@ -3,7 +3,6 @@ package com.health.sugar.lf10sugarhealth.model;
 import com.health.sugar.lf10sugarhealth.common.enums.BillingPeriod;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -28,7 +27,9 @@ public class MembershipStatus {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
-    public MembershipStatus() {}
+    public MembershipStatus() {
+        this.isActive = false;
+    }
 
     MembershipStatus(BillingPeriod period, LocalDateTime startDate, Boolean isActive, Member member) {
         this.billingPeriod = period;
