@@ -61,6 +61,21 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/{id}/membership")
+    public ResponseEntity<MembershipStatus> getMembershipById(@PathVariable("id") UUID id) {
+        try {
+            Optional<MembershipStatus> membershipStatusOptional = membershipStatusRepository.findByMemberId(id);
+
+            return membershipStatusOptional
+                    .map(membershipStatus -> new ResponseEntity<>(membershipStatus, HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<SugarInput> deleteById(@PathVariable("id") UUID id) {
         try {

@@ -1,6 +1,8 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
+import com.health.sugar.lf10sugarhealth.common.enums.StatsPeriod;
 import com.health.sugar.lf10sugarhealth.dto.CreateSugarInputRequestBody;
+import com.health.sugar.lf10sugarhealth.dto.SugarInputStat;
 import com.health.sugar.lf10sugarhealth.model.Member;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
 import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
@@ -12,9 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/sugar")
@@ -84,6 +89,40 @@ public class SugarInputController {
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{id}/stats/{period}")
+    public ResponseEntity<List<SugarInput>> getStatsByPeriod(@PathVariable("id") UUID memberId, @PathVariable("period") StatsPeriod period) {
+        try {
+            switch (period) {
+                case DAILY -> {
+                    logger.info("Called daily stats for member: " + memberId);
+                    LocalDateTime endDate = LocalDate.now().atTime(23,59,59);
+                    LocalDateTime startDate = LocalDate.now().minusDays(7).atStartOfDay();
+
+                    List<SugarInputStat> sugarInputStats = sugarInputRepository.getSumOfSugarInputsForMemberAndTimestampDateBetween(memberId, startDate, endDate);
+
+                }
+                case MONTHLY -> {
+                    logger.info("Called monthly stats for member: " + memberId);
+                }
+                default ->  {
+                    logger.error("Called stats for member: " + memberId + " without valid period..");
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            List<SugarInput> sugarInputList = new ArrayList<>(sugarInputRepository.findAll());
+
+            if (sugarInputList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(sugarInputList, HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
