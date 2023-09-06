@@ -2,7 +2,6 @@ package com.health.sugar.lf10sugarhealth.controller;
 
 import com.health.sugar.lf10sugarhealth.model.Member;
 import com.health.sugar.lf10sugarhealth.model.MembershipStatus;
-import com.health.sugar.lf10sugarhealth.model.SugarInput;
 import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
 import com.health.sugar.lf10sugarhealth.repository.MembershipStatusRepository;
 import org.slf4j.Logger;
@@ -27,7 +26,7 @@ public class MemberController {
     @Autowired
     MembershipStatusRepository membershipStatusRepository;
 
-    Logger logger = LoggerFactory.getLogger(SugarInputController.class);
+    Logger logger = LoggerFactory.getLogger(MemberController.class);
 
 
     @GetMapping("/")
@@ -61,8 +60,23 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/{id}/membership")
+    public ResponseEntity<MembershipStatus> getMembershipById(@PathVariable("id") UUID id) {
+        try {
+            Optional<MembershipStatus> membershipStatusOptional = membershipStatusRepository.findByMemberId(id);
+
+            return membershipStatusOptional
+                    .map(membershipStatus -> new ResponseEntity<>(membershipStatus, HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<SugarInput> deleteById(@PathVariable("id") UUID id) {
+    public ResponseEntity<Member> deleteById(@PathVariable("id") UUID id) {
         try {
             memberRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

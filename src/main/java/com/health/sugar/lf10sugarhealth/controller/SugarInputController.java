@@ -1,6 +1,8 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
+import com.health.sugar.lf10sugarhealth.common.enums.StatsPeriod;
 import com.health.sugar.lf10sugarhealth.dto.CreateSugarInputRequestBody;
+import com.health.sugar.lf10sugarhealth.dto.SugarInputStat;
 import com.health.sugar.lf10sugarhealth.model.Member;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
 import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
@@ -12,9 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/sugar")
@@ -84,6 +88,55 @@ public class SugarInputController {
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{id}/stats/{period}")
+    public ResponseEntity<List<SugarInputStat>> getStatsByPeriod(@PathVariable("id") UUID memberId, @PathVariable("period") StatsPeriod period) {
+        try {
+            List<SugarInputStat> sugarInputStats = new ArrayList<>();
+            LocalDate dateNow = LocalDate.now();
+            LocalDate endDate = dateNow;
+            LocalDate startDate;
+
+            switch (period) {
+                case LAST_7_DAYS -> {
+                        startDate = endDate.minusDays(6);
+                }
+                case LAST_30_DAYS -> {
+                        startDate = endDate.minusDays(29);
+                }
+                case CURRENT_MONTH -> {
+                    endDate = dateNow.withDayOfMonth(dateNow.lengthOfMonth());
+                    startDate = endDate.withDayOfMonth(1);
+                }
+                default -> startDate = endDate;
+            }
+
+            List<SugarInput> sugarInputList = sugarInputRepository.findAllByMemberIdAndDateBetween(memberId, startDate, endDate);
+
+            List<LocalDate> listOfDates = startDate.datesUntil(endDate.plusDays(1)).toList();
+
+            listOfDates.forEach(currentDate -> {
+                float totalSugarOfDate = 0f;
+
+                for (SugarInput sugarInput : sugarInputList) {
+                    if (sugarInput.getDate().isEqual(currentDate)) {
+                        totalSugarOfDate += sugarInput.getIntake();
+                    }
+                }
+
+                sugarInputStats.add(new SugarInputStat(totalSugarOfDate, currentDate));
+            });
+
+            if (sugarInputStats.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(sugarInputStats, HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

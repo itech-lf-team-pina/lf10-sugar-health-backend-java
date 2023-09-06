@@ -1,6 +1,7 @@
 package com.health.sugar.lf10sugarhealth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -23,6 +24,12 @@ public class Member {
     @JsonProperty("last")
     private String lastname;
 
+    @Column
+    @JsonProperty("google_client_id")
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    @Nullable
+    private String google_client_id;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "membership_status_id", referencedColumnName = "id")
     @JsonIgnore
@@ -39,6 +46,13 @@ public class Member {
         this.firstname = first;
         this.lastname = last;
         this.membershipStatus = membershipStatus;
+    }
+
+    public Member(String first, String last, MembershipStatus membershipStatus, @Nullable String google_client_id) {
+        this.firstname = first;
+        this.lastname = last;
+        this.membershipStatus = membershipStatus;
+        this.google_client_id = google_client_id;
     }
 
     public UUID getId() {
@@ -67,5 +81,14 @@ public class Member {
 
     public void setMembershipStatus(MembershipStatus membershipStatus) {
         this.membershipStatus = membershipStatus;
+    }
+
+    @Nullable
+    public String getGoogle_client_id() {
+        return google_client_id;
+    }
+
+    public void setGoogle_client_id(@Nullable String google_client_id) {
+        this.google_client_id = google_client_id;
     }
 }

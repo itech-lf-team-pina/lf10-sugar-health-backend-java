@@ -3,6 +3,7 @@ package com.health.sugar.lf10sugarhealth.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,6 +19,9 @@ public class SugarInput {
 
     @Column(name = "timestamp")
     private LocalDateTime timestamp;
+
+    @Column(name = "date")
+    private LocalDate date;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
@@ -73,5 +77,13 @@ public class SugarInput {
 
     public void setUser(Member member) {
         this.member = member;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }
