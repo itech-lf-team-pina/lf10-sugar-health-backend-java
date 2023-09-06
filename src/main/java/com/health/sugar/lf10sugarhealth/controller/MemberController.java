@@ -2,8 +2,10 @@ package com.health.sugar.lf10sugarhealth.controller;
 
 import com.health.sugar.lf10sugarhealth.model.Member;
 import com.health.sugar.lf10sugarhealth.model.MembershipStatus;
+import com.health.sugar.lf10sugarhealth.model.Profile;
 import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
 import com.health.sugar.lf10sugarhealth.repository.MembershipStatusRepository;
+import com.health.sugar.lf10sugarhealth.repository.ProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class MemberController {
 
     @Autowired
     MembershipStatusRepository membershipStatusRepository;
+
+    @Autowired
+    ProfileRepository profileRepository;
 
     Logger logger = LoggerFactory.getLogger(MemberController.class);
 
@@ -69,6 +74,22 @@ public class MemberController {
                     .map(membershipStatus -> new ResponseEntity<>(membershipStatus, HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{id}/profiles")
+    public ResponseEntity<List<Profile>> getProfileByMember(@PathVariable("id") UUID id) {
+        try {
+            List<Profile> profiles = profileRepository.findAllByMemberId(id);
+
+            if (profiles.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(profiles, HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
