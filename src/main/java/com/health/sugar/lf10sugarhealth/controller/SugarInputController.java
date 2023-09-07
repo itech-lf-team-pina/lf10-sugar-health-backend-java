@@ -94,8 +94,8 @@ public class SugarInputController {
         }
     }
 
-    @GetMapping("/{id}/stats/{period}")
-    public ResponseEntity<List<SugarInputStat>> getStatsByPeriod(@PathVariable("id") UUID memberId, @PathVariable("period") StatsPeriod period) {
+    @GetMapping("/{member_id}/stats/{period}")
+    public ResponseEntity<List<SugarInputStat>> getStatsByPeriod(@PathVariable("member_id") UUID memberId, @PathVariable("period") StatsPeriod period) {
         try {
             List<SugarInputStat> sugarInputStats = new ArrayList<>();
             LocalDate dateNow = LocalDate.now();
