@@ -17,18 +17,14 @@ public class Member {
     private UUID id;
 
     @Column
-    @JsonProperty("first")
-    private String firstname;
+    @JsonProperty("displayName")
+    private String displayName;
 
     @Column
-    @JsonProperty("last")
-    private String lastname;
-
-    @Column
-    @JsonProperty("google_client_id")
+    @JsonProperty("login_uid")
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @Nullable
-    private String google_client_id;
+    private String login_uid;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "membership_status_id", referencedColumnName = "id")
@@ -37,43 +33,25 @@ public class Member {
 
     public Member() {}
 
-    public Member(String firstname, String lastname) {
-        this.firstname = firstname;
-        this.lastname = lastname;
+    public Member(String displayName) {
+        this.displayName = displayName;
     }
 
-    public Member(String first, String last, MembershipStatus membershipStatus) {
-        this.firstname = first;
-        this.lastname = last;
+    public Member(String displayName, MembershipStatus membershipStatus) {
+        this.displayName = displayName;
         this.membershipStatus = membershipStatus;
     }
 
-    public Member(String first, String last, MembershipStatus membershipStatus, @Nullable String google_client_id) {
-        this.firstname = first;
-        this.lastname = last;
+    public Member(String displayName, MembershipStatus membershipStatus, @Nullable String login_uid) {
+        this.displayName = displayName;
         this.membershipStatus = membershipStatus;
-        this.google_client_id = google_client_id;
+        this.login_uid = login_uid;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
 
     public MembershipStatus getMembershipStatus() {
         return membershipStatus;
@@ -84,11 +62,19 @@ public class Member {
     }
 
     @Nullable
-    public String getGoogle_client_id() {
-        return google_client_id;
+    public String getLogin_uid() {
+        return login_uid;
     }
 
-    public void setGoogle_client_id(@Nullable String google_client_id) {
-        this.google_client_id = google_client_id;
+    public void setLogin_uid(@Nullable String google_client_id) {
+        this.login_uid = google_client_id;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

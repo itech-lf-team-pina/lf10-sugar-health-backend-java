@@ -113,7 +113,7 @@ public class MemberController {
             MembershipStatus membershipStatus = membershipStatusRepository.save(new MembershipStatus());
 
             Member member = memberRepository.save(
-                    new Member(memberRequestBody.getFirstname(), memberRequestBody.getLastname(), membershipStatus));
+                    new Member(memberRequestBody.getDisplayName(), membershipStatus));
 
             membershipStatus.setMember(member);
 
