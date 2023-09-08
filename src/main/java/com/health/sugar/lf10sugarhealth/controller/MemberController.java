@@ -9,6 +9,7 @@ import com.health.sugar.lf10sugarhealth.repository.ProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -113,7 +114,7 @@ public class MemberController {
             MembershipStatus membershipStatus = membershipStatusRepository.save(new MembershipStatus());
 
             Member member = memberRepository.save(
-                    new Member(memberRequestBody.getDisplayName(), membershipStatus));
+                    new Member(memberRequestBody.getDisplayName(), membershipStatus, memberRequestBody.getLogin_uid()));
 
             membershipStatus.setMember(member);
 
@@ -121,7 +122,12 @@ public class MemberController {
 
             return new ResponseEntity<>(member, HttpStatus.CREATED);
 
-        } catch (Exception e) {
+        } catch (DataIntegrityViolationException dve)
+        {
+            logger.error("Ein Nutzer mit diesem Google-Konto existiert bereits.");
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+        catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

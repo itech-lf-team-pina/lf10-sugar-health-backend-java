@@ -20,10 +20,9 @@ public class Member {
     @JsonProperty("displayName")
     private String displayName;
 
-    @Column
+    @Column(unique = true)
     @JsonProperty("login_uid")
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @Nullable
     private String login_uid;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -61,7 +60,6 @@ public class Member {
         this.membershipStatus = membershipStatus;
     }
 
-    @Nullable
     public String getLogin_uid() {
         return login_uid;
     }
