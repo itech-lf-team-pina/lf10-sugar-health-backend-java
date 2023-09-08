@@ -124,7 +124,7 @@ public class MemberController {
 
         } catch (DataIntegrityViolationException dve)
         {
-            logger.error("Ein Nutzer mit diesem Google-Konto existiert bereits.");
+            logger.error("Ein Nutzer mit diesem Login-Konto existiert bereits.");
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
         catch (Exception e) {
