@@ -60,7 +60,6 @@ public class Member {
         this.membershipStatus = membershipStatus;
     }
 
-    @Nullable
     public String getLogin_uid() {
         return login_uid;
     }
