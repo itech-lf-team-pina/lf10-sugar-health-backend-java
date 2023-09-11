@@ -6,14 +6,17 @@ import com.health.sugar.lf10sugarhealth.common.exceptions.MembershipNotFoundExce
 import com.health.sugar.lf10sugarhealth.model.Member;
 import com.health.sugar.lf10sugarhealth.model.MembershipStatus;
 import com.health.sugar.lf10sugarhealth.model.Profile;
+import com.health.sugar.lf10sugarhealth.model.SugarInput;
 import com.health.sugar.lf10sugarhealth.service.MemberService;
 import com.health.sugar.lf10sugarhealth.service.MembershipStatusService;
 import com.health.sugar.lf10sugarhealth.service.ProfileService;
+import com.health.sugar.lf10sugarhealth.service.SugarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/member")
+@RequestMapping(value = "/member", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
 
     @Autowired
@@ -33,11 +36,14 @@ public class MemberController {
     @Autowired
     MembershipStatusService membershipStatusService;
 
+    @Autowired
+    SugarService sugarService;
+
     Logger logger = LoggerFactory.getLogger(MemberController.class);
 
 
     @GetMapping("/")
-    public ResponseEntity<List<Member>> getAll() {
+    public ResponseEntity<List<Member>> getAllMembers() {
         try {
             List<Member> members = memberService.getAllMember();
 
@@ -53,7 +59,7 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Member> getById(@PathVariable("id") UUID id) {
+    public ResponseEntity<Member> getMemberById(@PathVariable("id") UUID id) {
         try {
             Member member = memberService.getMemberById(id);
 
@@ -98,8 +104,23 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/{id}/sugar")
+    public ResponseEntity<List<SugarInput>> getSugarIntakeByMember(@PathVariable("id") UUID member_id) {
+        try {
+            List<SugarInput> sugarInputList = sugarService.getSugarByMember(member_id);
+
+            return new ResponseEntity<>(sugarInputList, HttpStatus.OK);
+        } catch (EmptyResponseException emptyResponseException) {
+            logger.error(emptyResponseException.getMessage());
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Member> deleteById(@PathVariable("id") UUID member_id) {
+    public ResponseEntity<Member> deleteMemberById(@PathVariable("id") UUID member_id) {
         try {
             memberService.deleteMember(member_id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -110,7 +131,7 @@ public class MemberController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Member> create(@RequestBody Member memberRequestBody) {
+    public ResponseEntity<Member> createMember(@RequestBody Member memberRequestBody) {
         try {
             Member member = memberService.createMember(memberRequestBody.getDisplayName(), memberRequestBody.getLogin_uid());
 

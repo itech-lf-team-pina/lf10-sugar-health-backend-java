@@ -31,7 +31,7 @@ public class ProfileController {
 
 
     @GetMapping("/")
-    public ResponseEntity<List<Profile>> getAll() {
+    public ResponseEntity<List<Profile>> getAllProfiles() {
         try {
             List<Profile> profiles = new ArrayList<>(profileRepository.findAll());
 
@@ -47,7 +47,7 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Profile> getById(@PathVariable("id") UUID id) {
+    public ResponseEntity<Profile> getProfileById(@PathVariable("id") UUID id) {
         try {
             Optional<Profile> profileOptional = profileRepository.findById(id);
 
@@ -62,7 +62,7 @@ public class ProfileController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Profile> deleteById(@PathVariable("id") UUID id) {
+    public ResponseEntity<Profile> deleteProfileById(@PathVariable("id") UUID id) {
         try {
             profileRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -73,7 +73,7 @@ public class ProfileController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Profile> create(@RequestBody CreateProfileRequestBody requestBody) {
+    public ResponseEntity<Profile> createProfile(@RequestBody CreateProfileRequestBody requestBody) {
         try {
             logger.info(requestBody.toString());
             Member member = memberRepository.findById(requestBody.getMemberID()).get();

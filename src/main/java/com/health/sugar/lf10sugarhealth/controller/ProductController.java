@@ -26,7 +26,7 @@ public class ProductController {
     Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @GetMapping("/")
-    public ResponseEntity<PageDTO> getAll(
+    public ResponseEntity<PageDTO> getAllProducts(
             @RequestParam(value = "page", defaultValue = "0", required = false) int pageNo,
             @RequestParam(value = "size", defaultValue = "25", required = false) int pageSize
     ) {
@@ -64,7 +64,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable("id") long id) {
+    public ResponseEntity<Product> getProductById(@PathVariable("id") long id) {
         try {
             Optional<Product> productOptional = productRepository.findById(id);
 
@@ -79,7 +79,7 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<PageDTO> searchBy(
+    public ResponseEntity<PageDTO> searchProductByEveryTextEntry(
             @RequestParam(value = "search", defaultValue = "0", required = false) String search,
             @RequestParam(value = "page", defaultValue = "0", required = false) int pageNo,
             @RequestParam(value = "size", defaultValue = "25", required = false) int pageSize
