@@ -27,7 +27,28 @@ public class Product {
 
     @JsonProperty("sugar")
     private Float sugar;
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getCategoryGerman() {
+        return categoryGerman;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDescriptionGerman() {
+        return descriptionGerman;
+    }
+
     public Float getSugar() {
         return sugar;
+    }
+
+    public long getId() {
+        return id;
     }
 }

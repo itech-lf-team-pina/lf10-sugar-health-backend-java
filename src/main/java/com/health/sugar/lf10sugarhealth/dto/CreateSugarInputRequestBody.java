@@ -4,6 +4,8 @@ import java.util.UUID;
 
 public class CreateSugarInputRequestBody {
     private Float intake;
+
+    private String description;
     private UUID memberID;
 
     public UUID getMemberID() {
@@ -20,5 +22,9 @@ public class CreateSugarInputRequestBody {
 
     public void setIntake(Float intake) {
         this.intake = intake;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

@@ -23,6 +23,9 @@ public class SugarInput {
     @Column(name = "date")
     private LocalDate date;
 
+    @Column(name= "description")
+    private String description;
+
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     @JsonIgnore
@@ -40,9 +43,11 @@ public class SugarInput {
         this.timestamp = LocalDateTime.now();
     }
 
-    public SugarInput(Float intake, Member member) {
+    public SugarInput(Float intake, Member member, String description) {
         this.intake = intake;
         this.member = member;
+        this.description = description;
+        this.date = LocalDate.now();
         this.timestamp = LocalDateTime.now();
     }
 
@@ -85,5 +90,13 @@ public class SugarInput {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

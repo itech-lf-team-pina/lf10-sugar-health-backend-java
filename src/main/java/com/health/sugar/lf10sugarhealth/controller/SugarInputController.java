@@ -88,7 +88,7 @@ public class SugarInputController {
 
             if (member.isPresent()) {
                 SugarInput sugarInput = sugarInputRepository.save(
-                        new SugarInput(sugarInputRequestBody.getIntake(), member.get()));
+                        new SugarInput(sugarInputRequestBody.getIntake(), member.get(), sugarInputRequestBody.getDescription()));
 
                 return new ResponseEntity<>(sugarInput, HttpStatus.CREATED);
             }
@@ -110,10 +110,10 @@ public class SugarInputController {
 
             switch (period) {
                 case LAST_7_DAYS -> {
-                        startDate = endDate.minusDays(6);
+                    startDate = endDate.minusDays(6);
                 }
                 case LAST_30_DAYS -> {
-                        startDate = endDate.minusDays(29);
+                    startDate = endDate.minusDays(29);
                 }
                 case CURRENT_MONTH -> {
                     endDate = dateNow.withDayOfMonth(dateNow.lengthOfMonth());
