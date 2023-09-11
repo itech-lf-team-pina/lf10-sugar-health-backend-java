@@ -1,7 +1,7 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
 import com.health.sugar.lf10sugarhealth.service.SugarCalculation.CustomUnitSugarCalculator;
-import com.health.sugar.lf10sugarhealth.service.SugarCalculation.HundredGramSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.WeightSugarCalculator;
 import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ISugarCalculationService;
 import com.health.sugar.lf10sugarhealth.common.enums.CalculationMode;
 import com.health.sugar.lf10sugarhealth.common.enums.StatsPeriod;
@@ -160,7 +160,7 @@ public class SugarInputController {
     {
         ISugarCalculationService calculationService;
         switch (mode){
-            case ByHundredGram -> calculationService = new HundredGramSugarCalculator();
+            case ByHundredGram -> calculationService = new WeightSugarCalculator();
             case ByCustomUnit -> calculationService = new CustomUnitSugarCalculator();
             case ByProduct -> calculationService = new ProductSugarCalculator();
             default -> calculationService = null;
