@@ -35,6 +35,12 @@ public class MemberService {
         }
     }
 
+    public Member getMemberByLoginId(String login_id) {
+        Optional<Member> memberOptional = memberRepository.findMemberByLoginUid(login_id);
+
+        return memberOptional.orElse(null);
+    }
+
     public List<Member> getAllMember() throws EmptyResponseException {
         List<Member> memberList = memberRepository.findAll();
 

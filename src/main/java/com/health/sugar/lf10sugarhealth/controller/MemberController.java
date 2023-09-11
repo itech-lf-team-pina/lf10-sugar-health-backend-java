@@ -138,8 +138,9 @@ public class MemberController {
             return new ResponseEntity<>(member, HttpStatus.CREATED);
 
         } catch (DataIntegrityViolationException dve) {
-            logger.error("Ein Nutzer mit diesem Login-Konto existiert bereits.");
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+            logger.info("Member is already in database, returning existing member");
+            Member member = memberService.getMemberByLoginId(memberRequestBody.getLogin_uid());
+            return new ResponseEntity<>(member, HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
