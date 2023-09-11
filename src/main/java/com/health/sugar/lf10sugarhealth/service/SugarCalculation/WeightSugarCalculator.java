@@ -8,7 +8,7 @@ public class WeightSugarCalculator implements ISugarCalculationService
     @Override
     public float calculateTotalSugar(SugarCalculationDto sugarCalculationDto)
     {
-        float sugarTotal = 0f;
+        float sugarTotal;
         switch (sugarCalculationDto.getMode()){
             case ByHundredGram -> sugarTotal = sugarCalculationDto.sugarPerUnit * sugarCalculationDto.consumedUnits/100;
             default -> sugarTotal = 0;
