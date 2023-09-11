@@ -1,12 +1,18 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.CustomUnitSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.WeightSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ISugarCalculationService;
+import com.health.sugar.lf10sugarhealth.common.enums.CalculationMode;
 import com.health.sugar.lf10sugarhealth.common.enums.StatsPeriod;
 import com.health.sugar.lf10sugarhealth.dto.CreateSugarInputRequestBody;
+import com.health.sugar.lf10sugarhealth.dto.SugarCalculationDto;
 import com.health.sugar.lf10sugarhealth.dto.SugarInputStat;
 import com.health.sugar.lf10sugarhealth.model.Member;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
 import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
 import com.health.sugar.lf10sugarhealth.repository.SugarInputRepository;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ProductSugarCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +147,25 @@ public class SugarInputController {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/calculateSugar")
+    public float calculateSugarTotal(@RequestBody SugarCalculationDto sugarCalculationDto)
+    {
+        ISugarCalculationService calculator = getCalculationService(sugarCalculationDto.getMode());
+        return calculator.calculateTotalSugar(sugarCalculationDto);
+    }
+
+    private ISugarCalculationService getCalculationService(CalculationMode mode)
+    {
+        ISugarCalculationService calculationService;
+        switch (mode){
+            case ByHundredGram -> calculationService = new WeightSugarCalculator();
+            case ByCustomUnit -> calculationService = new CustomUnitSugarCalculator();
+            case ByProduct -> calculationService = new ProductSugarCalculator();
+            default -> calculationService = null;
+        }
+        return calculationService;
     }
 
 }
