@@ -1,8 +1,8 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
-import com.health.sugar.lf10sugarhealth.service.CustomUnitSugarCalculator;
-import com.health.sugar.lf10sugarhealth.service.HundredGramSugarCalculator;
-import com.health.sugar.lf10sugarhealth.service.ISugarCalculationService;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.CustomUnitSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.HundredGramSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ISugarCalculationService;
 import com.health.sugar.lf10sugarhealth.common.enums.CalculationMode;
 import com.health.sugar.lf10sugarhealth.common.enums.StatsPeriod;
 import com.health.sugar.lf10sugarhealth.dto.CreateSugarInputRequestBody;
@@ -12,7 +12,7 @@ import com.health.sugar.lf10sugarhealth.model.Member;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
 import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
 import com.health.sugar.lf10sugarhealth.repository.SugarInputRepository;
-import com.health.sugar.lf10sugarhealth.service.ProductSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ProductSugarCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

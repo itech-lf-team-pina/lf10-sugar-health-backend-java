@@ -27,4 +27,7 @@ public class Product {
 
     @JsonProperty("sugar")
     private Float sugar;
+    public Float getSugar() {
+        return sugar;
+    }
 }

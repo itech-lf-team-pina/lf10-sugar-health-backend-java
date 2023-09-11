@@ -1,4 +1,4 @@
-package com.health.sugar.lf10sugarhealth.service;
+package com.health.sugar.lf10sugarhealth.service.SugarCalculation;
 
 import com.health.sugar.lf10sugarhealth.dto.SugarCalculationDto;
 
