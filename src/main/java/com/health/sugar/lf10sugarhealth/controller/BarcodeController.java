@@ -66,9 +66,9 @@ public class BarcodeController {
 //    }
 
     @PostMapping("/")
-    public ResponseEntity<Barcode> createMember(@RequestBody CreateBarCodeDTO barCodeDTO) throws EmptyResponseException {
+    public ResponseEntity<Barcode> createMember(@RequestBody Barcode barCodeDTO) throws EmptyResponseException {
         try {
-            Barcode barcode = barcodeService.createBarcode(barCodeDTO.getBarcode(), barCodeDTO.getName());
+            Barcode barcode = barcodeService.createBarcode(barCodeDTO);
 
             return new ResponseEntity<>(barcode, HttpStatus.CREATED);
 

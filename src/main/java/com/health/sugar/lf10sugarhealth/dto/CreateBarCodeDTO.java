@@ -5,11 +5,20 @@ public class CreateBarCodeDTO {
 
     private String barcode;
 
+    private Float sugar;
+
+    private Float quantity;
+
+    private Float sugarPerQuantity;
+
     public CreateBarCodeDTO() {}
 
     public CreateBarCodeDTO(String name, String barcode) {
         this.name = name;
         this.barcode = barcode;
+        this.sugar = sugar;
+        this.quantity = quantity;
+        this.sugarPerQuantity = sugarPerQuantity;
     }
 
     public String getBarcode() {

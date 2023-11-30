@@ -34,8 +34,8 @@ public class BarcodeService {
         return barcodeList;
     }
 
-    public Barcode createBarcode(String barcode, String name) throws DataIntegrityViolationException {
-        Barcode barcodeSaved = barcodeRepository.save(new Barcode(barcode, name));
+    public Barcode createBarcode(Barcode barcode) throws DataIntegrityViolationException {
+        Barcode barcodeSaved = barcodeRepository.save(barcode);
         return barcodeSaved;
     }
 }
