@@ -13,11 +13,23 @@ public class Barcode {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("sugar")
+    private Float sugar;
+
+    @JsonProperty("quantity")
+    private Float quantity;
+
+    @JsonProperty("sugarPerQuantity")
+    private Float sugarPerQuantity;
+
     public Barcode() {}
 
-    public Barcode(String barcode, String name) {
+    public Barcode(String barcode, String name, Float sugar, Float quantity, Float sugarPerQuantity) {
         this.barcode = barcode;
         this.name = name;
+        this.sugar = sugar;
+        this.quantity = quantity;
+        this.sugarPerQuantity = sugarPerQuantity;
     }
 
     public String getName() {
@@ -34,5 +46,29 @@ public class Barcode {
 
     public void setBarcode(String barcode) {
         this.barcode = barcode;
+    }
+
+    public Float getSugar() {
+        return sugar;
+    }
+
+    public void setSugar(Float sugar) {
+        this.sugar = sugar;
+    }
+
+    public Float getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Float quantity) {
+        this.quantity = quantity;
+    }
+
+    public Float getSugarPerQuantity() {
+        return sugarPerQuantity;
+    }
+
+    public void setSugarPerQuantity(Float sugarPerQuantity) {
+        this.sugarPerQuantity = sugarPerQuantity;
     }
 }
