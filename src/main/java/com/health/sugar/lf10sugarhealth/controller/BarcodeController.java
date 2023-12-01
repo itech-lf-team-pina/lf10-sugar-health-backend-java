@@ -1,7 +1,6 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
 import com.health.sugar.lf10sugarhealth.common.exceptions.EmptyResponseException;
-import com.health.sugar.lf10sugarhealth.dto.CreateBarCodeDTO;
 import com.health.sugar.lf10sugarhealth.model.Barcode;
 import com.health.sugar.lf10sugarhealth.service.BarcodeService;
 import org.slf4j.Logger;
@@ -55,7 +54,7 @@ public class BarcodeController {
     }
 
 //    @DeleteMapping("/{id}")
-//    public ResponseEntity<Barcode> deleteMemberById(@PathVariable("barcode") String barcode) {
+//    public ResponseEntity<Barcode> deleteAccountById(@PathVariable("barcode") String barcode) {
 //        try {
 //            barcodeService.delete(barcode);
 //            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -66,7 +65,7 @@ public class BarcodeController {
 //    }
 
     @PostMapping("/")
-    public ResponseEntity<Barcode> createMember(@RequestBody Barcode barCodeDTO) throws EmptyResponseException {
+    public ResponseEntity<Barcode> createAccount(@RequestBody Barcode barCodeDTO) throws EmptyResponseException {
         try {
             Barcode barcode = barcodeService.createBarcode(barCodeDTO);
 

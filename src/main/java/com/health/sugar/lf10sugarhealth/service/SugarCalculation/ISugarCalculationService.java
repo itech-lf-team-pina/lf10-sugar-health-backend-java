@@ -1,6 +1,6 @@
 package com.health.sugar.lf10sugarhealth.service.SugarCalculation;
 
-import com.health.sugar.lf10sugarhealth.dto.SugarCalculationDto;
+import com.health.sugar.lf10sugarhealth.dto.request.SugarCalculationDto;
 
 public interface ISugarCalculationService
 {

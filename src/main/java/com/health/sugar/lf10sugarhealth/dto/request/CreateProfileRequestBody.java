@@ -1,19 +1,19 @@
-package com.health.sugar.lf10sugarhealth.dto;
+package com.health.sugar.lf10sugarhealth.dto.request;
 
 import java.util.UUID;
 
 public class CreateProfileRequestBody {
     private String name;
-    private UUID member_id;
+    private UUID account_id;
 
     private String imageUrl;
 
-    public UUID getMemberID() {
-        return member_id;
+    public UUID getAccountID() {
+        return account_id;
     }
 
-    public void setMemberID(UUID memberId) {
-        this.member_id = memberId;
+    public void setAccountID(UUID accountId) {
+        this.account_id = accountId;
     }
 
     public String getImageUrl() {
@@ -36,7 +36,7 @@ public class CreateProfileRequestBody {
     public String toString() {
         return "CreateProfileRequestBody{" +
                 "name='" + name + '\'' +
-                ", memberId=" + member_id +
+                ", accountId=" + account_id +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }

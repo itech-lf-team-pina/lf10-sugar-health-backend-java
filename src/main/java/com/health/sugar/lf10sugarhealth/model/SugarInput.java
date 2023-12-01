@@ -27,9 +27,9 @@ public class SugarInput {
     private String description;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "profile_id")
     @JsonIgnore
-    private Member member;
+    private Profile profile;
 
     public SugarInput() {}
 
@@ -43,9 +43,9 @@ public class SugarInput {
         this.timestamp = LocalDateTime.now();
     }
 
-    public SugarInput(Float intake, Member member, String description) {
+    public SugarInput(Float intake, Profile profile, String description) {
         this.intake = intake;
-        this.member = member;
+        this.profile = profile;
         this.description = description;
         this.date = LocalDate.now();
         this.timestamp = LocalDateTime.now();
@@ -54,49 +54,25 @@ public class SugarInput {
     public float getIntake() {
         return intake;
     }
-
-    public void setIntake(float intake) {
-        this.intake = intake;
-    }
-
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
     @Override
     public String toString() {
-        return String.format("SugarInput [id: %s | intake: %s | timestamp: %s | User: %s ]", this.id, this.intake, this.timestamp.toString(), this.getUser().toString());
+        return String.format("SugarInput [id: %s | intake: %s | timestamp: %s | User: %s ]", this.id, this.intake, this.timestamp.toString(), this.getProfile().toString());
     }
 
     public Long getId() {
         return id;
     }
-
-    public Member getUser() {
-        return member;
+    public Profile getProfile() {
+        return profile;
     }
-
-    public void setUser(Member member) {
-        this.member = member;
-    }
-
     public LocalDate getDate() {
         return date;
     }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

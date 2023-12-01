@@ -1,11 +1,13 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
-import com.health.sugar.lf10sugarhealth.dto.CreateProfileRequestBody;
-import com.health.sugar.lf10sugarhealth.model.Member;
+import com.health.sugar.lf10sugarhealth.common.exceptions.ProfileLimitExceededNoMembershipException;
+import com.health.sugar.lf10sugarhealth.common.exceptions.ProfileLimitExceededWithMembershipException;
+import com.health.sugar.lf10sugarhealth.dto.request.CreateProfileRequestBody;
 import com.health.sugar.lf10sugarhealth.model.Profile;
-import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
+import com.health.sugar.lf10sugarhealth.repository.AccountRepository;
 import com.health.sugar.lf10sugarhealth.repository.MembershipStatusRepository;
 import com.health.sugar.lf10sugarhealth.repository.ProfileRepository;
+import com.health.sugar.lf10sugarhealth.service.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,13 @@ import java.util.*;
 @RequestMapping("/profile")
 public class ProfileController {
     @Autowired
-    MemberRepository memberRepository;
+    AccountRepository accountRepository;
 
     @Autowired
     ProfileRepository profileRepository;
+
+    @Autowired
+    ProfileService profileService;
 
     @Autowired
     MembershipStatusRepository membershipStatusRepository;
@@ -75,27 +80,7 @@ public class ProfileController {
     @PostMapping("/")
     public ResponseEntity<Profile> createProfile(@RequestBody CreateProfileRequestBody requestBody) {
         try {
-            logger.info(requestBody.toString());
-            Member member = memberRepository.findById(requestBody.getMemberID()).get();
-            Profile profile = null;
-
-
-            int allowedProfiles = 2;
-            boolean isPremium = member.getMembershipStatus().getActive();
-
-            if (isPremium) {
-                allowedProfiles = 8;
-            }
-
-            int currentProfileCount = profileRepository.countProfileByMemberId(requestBody.getMemberID());
-
-            if (currentProfileCount < allowedProfiles) {
-                logger.info("currentProfileCount {} < allowedProfiles {}", currentProfileCount, allowedProfiles);
-                profile = profileRepository.save(
-                        new Profile(requestBody.getName(), member, requestBody.getImageUrl()));
-            } else {
-                logger.info("currentProfileCount {} >= allowedProfiles {}", currentProfileCount, allowedProfiles);
-            }
+            Profile profile = profileService.create(requestBody.getAccountID(), requestBody.getName(), requestBody.getImageUrl(), false);
 
             if (Objects.isNull(profile)) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
@@ -105,6 +90,9 @@ public class ProfileController {
         } catch (NoSuchElementException e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        } catch (ProfileLimitExceededNoMembershipException | ProfileLimitExceededWithMembershipException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

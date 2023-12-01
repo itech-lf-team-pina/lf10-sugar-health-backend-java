@@ -1,6 +1,6 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
-import com.health.sugar.lf10sugarhealth.dto.PageDTO;
+import com.health.sugar.lf10sugarhealth.dto.response.PageDTO;
 import com.health.sugar.lf10sugarhealth.model.Product;
 import com.health.sugar.lf10sugarhealth.repository.ProductRepository;
 import org.slf4j.Logger;

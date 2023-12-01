@@ -1,7 +1,10 @@
 package com.health.sugar.lf10sugarhealth.service;
 
 import com.health.sugar.lf10sugarhealth.common.exceptions.EmptyResponseException;
+import com.health.sugar.lf10sugarhealth.dto.request.CreateSugarInputRequestBody;
+import com.health.sugar.lf10sugarhealth.model.Profile;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
+import com.health.sugar.lf10sugarhealth.repository.ProfileRepository;
 import com.health.sugar.lf10sugarhealth.repository.SugarInputRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +20,27 @@ public class SugarService {
     @Autowired
     SugarInputRepository sugarInputRepository;
 
-    public List<SugarInput> getSugarByMember(UUID member_id) throws EmptyResponseException {
-        List<SugarInput> sugarInputList = sugarInputRepository.findAllByMemberIdAndDateBetweenOrderByTimestampTimestampDesc(member_id);
+    @Autowired
+    ProfileRepository profileRepository;
+
+    public List<SugarInput> getSugarByAccount(UUID account_id) throws EmptyResponseException {
+        List<SugarInput> sugarInputList = sugarInputRepository.findAllByAccountIdAndDateBetweenOrderByTimestampTimestampDesc(account_id);
 
         if (sugarInputList.isEmpty()) {
-            throw new EmptyResponseException("getSugarByMember response is empty");
+            throw new EmptyResponseException("getSugarByAccount response is empty");
         }
         return sugarInputList;
+    }
+
+    public SugarInput create(CreateSugarInputRequestBody sugarInputRequestBody) {
+        Profile profile = profileRepository.getReferenceById(sugarInputRequestBody.getProfileId());
+
+        return sugarInputRepository.save(
+                new SugarInput(
+                        sugarInputRequestBody.getIntake(),
+                        profile,
+                        sugarInputRequestBody.getDescription()
+                )
+        );
     }
 }

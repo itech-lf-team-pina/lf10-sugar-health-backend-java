@@ -1,4 +1,4 @@
-package com.health.sugar.lf10sugarhealth.dto;
+package com.health.sugar.lf10sugarhealth.dto.request;
 
 public class CreateBarCodeDTO {
     private String name;

@@ -7,8 +7,4 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProfileRepository extends JpaRepository<Profile, UUID> {
-
-    int countProfileByMemberId(UUID member_id);
-
-    List<Profile> findAllByMemberId(UUID member_id);
 }

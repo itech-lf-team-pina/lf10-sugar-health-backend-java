@@ -1,4 +1,4 @@
-package com.health.sugar.lf10sugarhealth.dto;
+package com.health.sugar.lf10sugarhealth.dto.request;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

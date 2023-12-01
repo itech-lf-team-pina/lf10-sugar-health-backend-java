@@ -1,4 +1,4 @@
-package com.health.sugar.lf10sugarhealth.dto;
+package com.health.sugar.lf10sugarhealth.dto.response;
 
 import java.util.List;
 
