@@ -1,4 +1,4 @@
-package com.health.sugar.lf10sugarhealth.dto;
+package com.health.sugar.lf10sugarhealth.dto.request;
 
 import java.util.UUID;
 
@@ -6,14 +6,14 @@ public class CreateSugarInputRequestBody {
     private Float intake;
 
     private String description;
-    private UUID memberID;
+    private UUID profileId;
 
-    public UUID getMemberID() {
-        return memberID;
+    public UUID getProfileId() {
+        return profileId;
     }
 
-    public void setMemberID(UUID memberID) {
-        this.memberID = memberID;
+    public void setProfileId(UUID profileId) {
+        this.profileId = profileId;
     }
 
     public Float getIntake() {

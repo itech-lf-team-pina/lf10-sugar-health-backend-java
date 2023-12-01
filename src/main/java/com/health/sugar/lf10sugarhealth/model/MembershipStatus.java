@@ -23,26 +23,20 @@ public class MembershipStatus {
     @Column
     private BillingPeriod billingPeriod;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_id", referencedColumnName = "id")
-    private Member member;
-
     public MembershipStatus() {
         this.isActive = false;
     }
 
-    MembershipStatus(BillingPeriod period, LocalDateTime startDate, Boolean isActive, Member member) {
+    MembershipStatus(BillingPeriod period, LocalDateTime startDate, Boolean isActive, Account account) {
         this.billingPeriod = period;
         this.startDate = startDate;
         this.isActive = isActive;
-        this.member = member;
     }
 
-    MembershipStatus(Member member) {
+    MembershipStatus(Account account) {
         this.billingPeriod = null;
         this.startDate = null;
         this.isActive = false;
-        this.member = member;
     }
 
     public UUID getId() {
@@ -71,13 +65,5 @@ public class MembershipStatus {
 
     public void setBillingPeriod(BillingPeriod billingPeriod) {
         this.billingPeriod = billingPeriod;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
     }
 }

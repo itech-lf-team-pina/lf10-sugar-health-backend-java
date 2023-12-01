@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-public class Member {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,18 +31,22 @@ public class Member {
     @JsonIgnore
     private MembershipStatus membershipStatus;
 
-    public Member() {}
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "account")
+    @JsonIgnore
+    private List<Profile> profileList;
 
-    public Member(String displayName) {
+    public Account() {}
+
+    public Account(String displayName) {
         this.displayName = displayName;
     }
 
-    public Member(String displayName, MembershipStatus membershipStatus) {
+    public Account(String displayName, MembershipStatus membershipStatus) {
         this.displayName = displayName;
         this.membershipStatus = membershipStatus;
     }
 
-    public Member(String displayName, MembershipStatus membershipStatus, @Nullable String login_uid) {
+    public Account(String displayName, MembershipStatus membershipStatus, @Nullable String login_uid) {
         this.displayName = displayName;
         this.membershipStatus = membershipStatus;
         this.login_uid = login_uid;
@@ -74,5 +79,13 @@ public class Member {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public List<Profile> getProfileList() {
+        return profileList;
+    }
+
+    public void setProfileList(List<Profile> profileList) {
+        this.profileList = profileList;
     }
 }

@@ -1,18 +1,18 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
+import com.health.sugar.lf10sugarhealth.repository.ProfileRepository;
 import com.health.sugar.lf10sugarhealth.service.SugarCalculation.CustomUnitSugarCalculator;
 import com.health.sugar.lf10sugarhealth.service.SugarCalculation.WeightSugarCalculator;
 import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ISugarCalculationService;
 import com.health.sugar.lf10sugarhealth.common.enums.CalculationMode;
 import com.health.sugar.lf10sugarhealth.common.enums.StatsPeriod;
-import com.health.sugar.lf10sugarhealth.dto.CreateSugarInputRequestBody;
-import com.health.sugar.lf10sugarhealth.dto.SugarCalculationDto;
-import com.health.sugar.lf10sugarhealth.dto.SugarInputStat;
-import com.health.sugar.lf10sugarhealth.model.Member;
+import com.health.sugar.lf10sugarhealth.dto.request.CreateSugarInputRequestBody;
+import com.health.sugar.lf10sugarhealth.dto.request.SugarCalculationDto;
+import com.health.sugar.lf10sugarhealth.dto.request.SugarInputStat;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
-import com.health.sugar.lf10sugarhealth.repository.MemberRepository;
 import com.health.sugar.lf10sugarhealth.repository.SugarInputRepository;
 import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ProductSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,10 @@ public class SugarInputController {
     SugarInputRepository sugarInputRepository;
 
     @Autowired
-    MemberRepository memberRepository;
+    ProfileRepository profileRepository;
+
+    @Autowired
+    SugarService sugarService;
 
     Logger logger = LoggerFactory.getLogger(SugarInputController.class);
 
@@ -84,24 +87,17 @@ public class SugarInputController {
     @PostMapping("/")
     public ResponseEntity<SugarInput> createSugarInput(@RequestBody CreateSugarInputRequestBody sugarInputRequestBody) {
         try {
-            Optional<Member> member = memberRepository.findById(sugarInputRequestBody.getMemberID());
+            SugarInput sugarInput = sugarService.create(sugarInputRequestBody);
 
-            if (member.isPresent()) {
-                SugarInput sugarInput = sugarInputRepository.save(
-                        new SugarInput(sugarInputRequestBody.getIntake(), member.get(), sugarInputRequestBody.getDescription()));
-
-                return new ResponseEntity<>(sugarInput, HttpStatus.CREATED);
-            }
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity<>(sugarInput, HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/{member_id}/stats/{period}")
-    public ResponseEntity<List<SugarInputStat>> getStatsByPeriod(@PathVariable("member_id") UUID memberId, @PathVariable("period") StatsPeriod period) {
+    @GetMapping("/{profile_id}/stats/{period}")
+    public ResponseEntity<List<SugarInputStat>> getStatsByPeriod(@PathVariable("profile_id") UUID profileId, @PathVariable("period") StatsPeriod period) {
         try {
             List<SugarInputStat> sugarInputStats = new ArrayList<>();
             LocalDate dateNow = LocalDate.now();
@@ -122,7 +118,7 @@ public class SugarInputController {
                 default -> startDate = endDate;
             }
 
-            List<SugarInput> sugarInputList = sugarInputRepository.findAllByMemberIdAndDateBetween(memberId, startDate, endDate);
+            List<SugarInput> sugarInputList = sugarInputRepository.findAllByProfileIdAndDateBetween(profileId, startDate, endDate);
 
             List<LocalDate> listOfDates = startDate.datesUntil(endDate.plusDays(1)).toList();
 
@@ -150,16 +146,14 @@ public class SugarInputController {
     }
 
     @GetMapping("/calculateSugar")
-    public float calculateSugarTotal(@RequestBody SugarCalculationDto sugarCalculationDto)
-    {
+    public float calculateSugarTotal(@RequestBody SugarCalculationDto sugarCalculationDto) {
         ISugarCalculationService calculator = getCalculationService(sugarCalculationDto.getMode());
         return calculator.calculateTotalSugar(sugarCalculationDto);
     }
 
-    private ISugarCalculationService getCalculationService(CalculationMode mode)
-    {
+    private ISugarCalculationService getCalculationService(CalculationMode mode) {
         ISugarCalculationService calculationService;
-        switch (mode){
+        switch (mode) {
             case ByHundredGram -> calculationService = new WeightSugarCalculator();
             case ByCustomUnit -> calculationService = new CustomUnitSugarCalculator();
             case ByProduct -> calculationService = new ProductSugarCalculator();

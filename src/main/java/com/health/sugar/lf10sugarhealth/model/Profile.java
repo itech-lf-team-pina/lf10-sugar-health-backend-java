@@ -1,5 +1,6 @@
 package com.health.sugar.lf10sugarhealth.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -13,16 +14,20 @@ public class Profile {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_id", referencedColumnName = "id")
-    private Member member;
-
     private String imageUrl;
 
-    public Profile(String name, Member member, String imageUrl) {
+    private Boolean primaryProfile;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Account account;
+
+    public Profile(String name, Account account, String imageUrl, Boolean primaryProfile) {
         this.imageUrl = imageUrl;
         this.name = name;
-        this.member = member;
+        this.account = account;
+        this.primaryProfile = primaryProfile;
     }
 
     public Profile() {
@@ -36,14 +41,6 @@ public class Profile {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
     }
 
     public String getName() {
@@ -60,5 +57,13 @@ public class Profile {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public Boolean getPrimaryProfile() {
+        return primaryProfile;
     }
 }

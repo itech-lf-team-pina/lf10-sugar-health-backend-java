@@ -1,20 +1,19 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
 import com.health.sugar.lf10sugarhealth.common.exceptions.EmptyResponseException;
-import com.health.sugar.lf10sugarhealth.common.exceptions.MemberNotFoundException;
-import com.health.sugar.lf10sugarhealth.common.exceptions.MembershipNotFoundException;
-import com.health.sugar.lf10sugarhealth.model.Member;
+import com.health.sugar.lf10sugarhealth.common.exceptions.AccountNotFoundException;
+import com.health.sugar.lf10sugarhealth.dto.request.CreateAccountDTO;
+import com.health.sugar.lf10sugarhealth.dto.response.AccountCreationResponseDTO;
+import com.health.sugar.lf10sugarhealth.model.Account;
 import com.health.sugar.lf10sugarhealth.model.MembershipStatus;
 import com.health.sugar.lf10sugarhealth.model.Profile;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
-import com.health.sugar.lf10sugarhealth.service.MemberService;
-import com.health.sugar.lf10sugarhealth.service.MembershipStatusService;
+import com.health.sugar.lf10sugarhealth.service.AccountService;
 import com.health.sugar.lf10sugarhealth.service.ProfileService;
 import com.health.sugar.lf10sugarhealth.service.SugarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,30 +23,27 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/member", produces = MediaType.APPLICATION_JSON_VALUE)
-public class MemberController {
+@RequestMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
+public class AccountController {
 
     @Autowired
-    MemberService memberService;
+    AccountService accountService;
 
     @Autowired
     ProfileService profileService;
 
     @Autowired
-    MembershipStatusService membershipStatusService;
-
-    @Autowired
     SugarService sugarService;
 
-    Logger logger = LoggerFactory.getLogger(MemberController.class);
+    Logger logger = LoggerFactory.getLogger(AccountController.class);
 
 
     @GetMapping("/")
-    public ResponseEntity<List<Member>> getAllMembers() {
+    public ResponseEntity<List<Account>> getAllAccounts() {
         try {
-            List<Member> members = memberService.getAllMember();
+            List<Account> accounts = accountService.getAll();
 
-            return new ResponseEntity<>(members, HttpStatus.OK);
+            return new ResponseEntity<>(accounts, HttpStatus.OK);
 
         } catch (EmptyResponseException emptyResponseException) {
             logger.error(emptyResponseException.getMessage());
@@ -59,14 +55,14 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Member> getMemberById(@PathVariable("id") UUID id) {
+    public ResponseEntity<Account> getAccountById(@PathVariable("id") UUID id) {
         try {
-            Member member = memberService.getMemberById(id);
+            Account account = accountService.getByAccountId(id);
 
-            return new ResponseEntity<>(member, HttpStatus.OK);
+            return new ResponseEntity<>(account, HttpStatus.OK);
 
-        } catch (MemberNotFoundException memberNotFoundException) {
-            logger.error(memberNotFoundException.getMessage());
+        } catch (AccountNotFoundException accountNotFoundException) {
+            logger.error(accountNotFoundException.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -77,11 +73,11 @@ public class MemberController {
     @GetMapping("/{id}/membership")
     public ResponseEntity<MembershipStatus> getMembershipById(@PathVariable("id") UUID id) {
         try {
-            MembershipStatus membershipStatus = membershipStatusService.getMembershipStatusById(id);
+            Account account = accountService.getByAccountId(id);
 
-            return new ResponseEntity<>(membershipStatus, HttpStatus.OK);
-        } catch (MembershipNotFoundException membershipNotFoundException) {
-            logger.error(membershipNotFoundException.getMessage());
+            return new ResponseEntity<>(account.getMembershipStatus(), HttpStatus.OK);
+        } catch (AccountNotFoundException accountNotFoundException) {
+            logger.error(accountNotFoundException.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -90,9 +86,9 @@ public class MemberController {
     }
 
     @GetMapping("/{id}/profiles")
-    public ResponseEntity<List<Profile>> getProfileByMember(@PathVariable("id") UUID member_id) {
+    public ResponseEntity<List<Profile>> getProfileByAccount(@PathVariable("id") UUID account_id) {
         try {
-            List<Profile> profiles = profileService.getProfilesByMemberId(member_id);
+            List<Profile> profiles = profileService.getByAccountId(account_id);
 
             return new ResponseEntity<>(profiles, HttpStatus.OK);
         } catch (EmptyResponseException emptyResponseException) {
@@ -105,9 +101,9 @@ public class MemberController {
     }
 
     @GetMapping("/{id}/sugar")
-    public ResponseEntity<List<SugarInput>> getSugarIntakeByMember(@PathVariable("id") UUID member_id) {
+    public ResponseEntity<List<SugarInput>> getSugarIntakeByAccount(@PathVariable("id") UUID account_id) {
         try {
-            List<SugarInput> sugarInputList = sugarService.getSugarByMember(member_id);
+            List<SugarInput> sugarInputList = sugarService.getSugarByAccount(account_id);
 
             return new ResponseEntity<>(sugarInputList, HttpStatus.OK);
         } catch (EmptyResponseException emptyResponseException) {
@@ -120,9 +116,9 @@ public class MemberController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Member> deleteMemberById(@PathVariable("id") UUID member_id) {
+    public ResponseEntity<Account> deleteAccountById(@PathVariable("id") UUID account_id) {
         try {
-            memberService.deleteMember(member_id);
+            accountService.delete(account_id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -131,16 +127,27 @@ public class MemberController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Member> createMember(@RequestBody Member memberRequestBody) {
+    public ResponseEntity<AccountCreationResponseDTO> createAccount(@RequestBody CreateAccountDTO accountRequestBody) {
         try {
-            Member member = memberService.createMember(memberRequestBody.getDisplayName(), memberRequestBody.getLogin_uid());
+            Boolean accountExists = accountService.isAccountAlreadyCreated(accountRequestBody.getUid());
 
-            return new ResponseEntity<>(member, HttpStatus.CREATED);
+            if (!accountExists) {
+                Account account = accountService.create(
+                        accountRequestBody.getName(),
+                        accountRequestBody.getUid()
+                );
 
-        } catch (DataIntegrityViolationException dve) {
-            logger.info("Member is already in database, returning existing member");
-            Member member = memberService.getMemberByLoginId(memberRequestBody.getLogin_uid());
-            return new ResponseEntity<>(member, HttpStatus.OK);
+                Profile profile = profileService.create(
+                        account,
+                        accountRequestBody.getImageUrl()
+                );
+
+                return new ResponseEntity<>(new AccountCreationResponseDTO(account, profile), HttpStatus.CREATED);
+            } else {
+                Account account = accountService.getByLoginId(accountRequestBody.getUid());
+                Profile profile = profileService.getPrimary(account.getId());
+                return new ResponseEntity<>(new AccountCreationResponseDTO(account, profile), HttpStatus.OK);
+            }
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
