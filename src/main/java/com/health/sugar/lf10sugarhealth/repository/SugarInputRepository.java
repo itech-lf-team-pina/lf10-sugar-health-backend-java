@@ -18,4 +18,6 @@ public interface SugarInputRepository extends JpaRepository<SugarInput, Long> {
     }
 
     List<SugarInput> findAllByProfileIdAndTimestampBetweenOrderByTimestampDesc(UUID account_id, LocalDateTime startDate, LocalDateTime endDate);
+
+    void deleteAllByProfileId(UUID uid);
 }

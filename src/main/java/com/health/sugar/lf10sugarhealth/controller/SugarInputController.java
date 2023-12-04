@@ -1,23 +1,24 @@
 package com.health.sugar.lf10sugarhealth.controller;
 
-import com.health.sugar.lf10sugarhealth.repository.ProfileRepository;
-import com.health.sugar.lf10sugarhealth.service.SugarCalculation.CustomUnitSugarCalculator;
-import com.health.sugar.lf10sugarhealth.service.SugarCalculation.WeightSugarCalculator;
-import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ISugarCalculationService;
 import com.health.sugar.lf10sugarhealth.common.enums.CalculationMode;
 import com.health.sugar.lf10sugarhealth.common.enums.StatsPeriod;
 import com.health.sugar.lf10sugarhealth.dto.request.CreateSugarInputRequestBody;
 import com.health.sugar.lf10sugarhealth.dto.request.SugarCalculationDto;
 import com.health.sugar.lf10sugarhealth.dto.request.SugarInputStat;
 import com.health.sugar.lf10sugarhealth.model.SugarInput;
+import com.health.sugar.lf10sugarhealth.repository.ProfileRepository;
 import com.health.sugar.lf10sugarhealth.repository.SugarInputRepository;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.CustomUnitSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ISugarCalculationService;
 import com.health.sugar.lf10sugarhealth.service.SugarCalculation.ProductSugarCalculator;
+import com.health.sugar.lf10sugarhealth.service.SugarCalculation.WeightSugarCalculator;
 import com.health.sugar.lf10sugarhealth.service.SugarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -83,6 +84,20 @@ public class SugarInputController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Transactional
+    @DeleteMapping("/profile/{id}")
+    public ResponseEntity<SugarInput> deleteSugarInputById(@PathVariable("id") UUID id) {
+        try {
+            sugarInputRepository.deleteAllByProfileId(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            logger.error(e.toString());
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @PostMapping("/")
     public ResponseEntity<SugarInput> createSugarInput(@RequestBody CreateSugarInputRequestBody sugarInputRequestBody) {
